@@ -1,4 +1,5 @@
 import pygame, math, sys
+import numpy as np
 
 pygame.init()
 
@@ -21,13 +22,13 @@ monster_height = 100
 
 clock = pygame.time.Clock()
 dudeImg = pygame.image.load('Dude.png')
-monsterImg = pygame.image.load('Monster.png')
+monsterImg = pygame.image.load('The_monster.png')
 
 def dude(x,y):
     gameDisplay.blit(dudeImg, (x,y))
 
-def monster(xd, yd):
-    gameDisplay.blit(monsterImg, (x,y))
+def monster(xd,yd):
+    gameDisplay.blit(monsterImg, (xd,yd))
 
 def game_loop():
 
@@ -37,8 +38,6 @@ def game_loop():
     yd = (display_width * 0.8)
     x_change = 0
     y_change = 0
-    xd_change = 0
-    yd_change = 0
 
     while 1:
         clock.tick(60)
@@ -81,17 +80,29 @@ def game_loop():
             
         x += x_change
         y += y_change
-        
-        gameDisplay.fill(white)
-        dude(x,y)
-        pygame.display.update()
 
         ## Now for the monster AI
-        ## Create a predifined list with the four different actions
+        ## Create a predifined list with the eight different actions
         ## Iterate over the list and calculate the square distance to player for each action
         ## Use argmin to get index of smallest distance
         ## Use index to take that action
         
+        moveList = [0]*8
+        xMove = [increment, increment, 0, -increment, -increment, -increment, 0, increment]
+        yMove = [0, increment, increment, increment, 0, -increment, -increment, -increment]
+        for i in range(8):
+            moveList[i] = (((xd+xMove[i]) - x)**2) + (((yd+yMove[i])-y)**2)
 
+        moveDir = np.argmin(moveList, axis=None, out=None)
+
+        xd += int(xMove[moveDir])
+        yd += int(yMove[moveDir])
+        
+        gameDisplay.fill(white)
+        dude(x,y)
+        monster(xd,yd)
+        pygame.display.update()
+
+        
 game_loop()    
 
